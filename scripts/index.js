@@ -50,61 +50,65 @@ function animate(){
 animate()
 */
 
+// check if assets loaded first, cause the file is big could be buggy
+window.addEventListener('load', function(){
+  
 
-
-// create a class as blueprint for BG objects
-class Layer {
-  constructor(image,speedModifier){
-    this.x = 0;
-    this.y = 0;
-    this.width = 2400;
-    this.height = 700;
-    // this.x2 = this.width;
-    this.image = image; // pass from constructoe
-    this.speedModifier = speedModifier
-    this.speed = gameSpeed * this.speedModifier;
-  }
-
-  update(){
-    this.speed = gameSpeed * this.speedModifier;
-    if(this.x <= -this.width){
+  // create a class as blueprint for BG objects
+  class Layer {
+    constructor(image,speedModifier){
       this.x = 0;
+      this.y = 0;
+      this.width = 2400;
+      this.height = 700;
+      // this.x2 = this.width;
+      this.image = image; // pass from constructoe
+      this.speedModifier = speedModifier
+      this.speed = gameSpeed * this.speedModifier;
     }
-    this.x = Math.floor(this.x - this.speed);
+
+    update(){
+      this.speed = gameSpeed * this.speedModifier;
+      if(this.x <= -this.width){
+        this.x = 0;
+      }
+      this.x = Math.floor(this.x - this.speed);
+    }
+
+    draw(){
+      ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
+      ctx.drawImage(this.image,this.x + this.width,this.y,this.width,this.height);
+    }
   }
 
-  draw(){
-    ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
-    ctx.drawImage(this.image,this.x + this.width,this.y,this.width,this.height);
+  const layer1 = new Layer(bg_layer1,0.2);
+  const layer2 = new Layer(bg_layer2,0.4);
+  const layer3 = new Layer(bg_layer3,0.6);
+  const layer4 = new Layer(bg_layer4,0.8);
+  const layer5 = new Layer(bg_layer5,1);
+
+  const gameObjects = [layer1,layer2,layer3,layer4,layer5]
+
+  const slider = document.getElementById('slider');
+  slider.value = gameSpeed;
+
+  const showGameSpeed = document.getElementById('showGameSpeed');
+  showGameSpeed.innerHTML = gameSpeed;
+
+  slider.addEventListener('change',function(e){
+    gameSpeed = e.target.value;
+    showGameSpeed.innerHTML = e.target.value;
+  })
+
+  function animate(){
+    ctx.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT)
+    gameObjects.forEach( obj =>{
+      obj.update();
+      obj.draw();
+    });
+    requestAnimationFrame(animate);
   }
-}
 
-const layer1 = new Layer(bg_layer1,0.2);
-const layer2 = new Layer(bg_layer2,0.4);
-const layer3 = new Layer(bg_layer3,0.6);
-const layer4 = new Layer(bg_layer4,0.8);
-const layer5 = new Layer(bg_layer5,1);
+  animate();
 
-const gameObjects = [layer1,layer2,layer3,layer4,layer5]
-
-const slider = document.getElementById('slider');
-slider.value = gameSpeed;
-
-const showGameSpeed = document.getElementById('showGameSpeed');
-showGameSpeed.innerHTML = gameSpeed;
-
-slider.addEventListener('change',function(e){
-  gameSpeed = e.target.value;
-  showGameSpeed.innerHTML = e.target.value;
 })
-
-function animate(){
-  ctx.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT)
-  gameObjects.forEach( obj =>{
-    obj.update();
-    obj.draw();
-  });
-  requestAnimationFrame(animate);
-}
-
-animate();
